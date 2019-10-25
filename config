@@ -1,0 +1,104 @@
+general {
+        #output_format = "i3bar"
+        colors = true
+        interval = 5
+}
+
+order += "disk /"
+order += "disk /home"
+order += "wireless wlp2s0"
+order += "ethernet eno1"
+order += "battery 0"
+order += "cpu_temperature 0"
+order += "load"
+order += "volume master"
+order += "xrandr"
+order += "tztime local"
+
+wireless wlp2s0 {
+        format_up = " (%quality at %essid, %bitrate) %ip"
+        format_down = " down"
+}
+
+ethernet _first_ {
+        # if you use %speed, i3status requires the cap_net_admin capability
+        format_up = "E: %ip (%speed)"
+        format_down = "E: down"
+}
+
+#battery 0 {
+#        format = "%status %percentage %remaining %emptytime"
+#        format_down = "No battery"
+#        status_chr = "⚡ CHR"
+#        status_bat = "🔋 BAT"
+#        status_unk = "? UNK"
+#        status_full = "☻ FULL"
+#        path = "/sys/class/power_supply/BAT%d/uevent"
+#        low_threshold = 10
+#}
+
+battery 0 {
+        format = "%status %percentage %remaining"
+        status_bat = ""
+        status_chr = ""
+        status_full = ""
+        low_threshold = 30
+        threshold_type = percentage
+        integer_battery_capacity = true
+        color_good = "#0000FF"
+}
+
+run_watch DHCP {
+        pidfile = "/var/run/dhclient*.pid"
+}
+
+run_watch VPNC {
+        # file containing the PID of a vpnc process
+        pidfile = "/var/run/vpnc/pid"
+}
+
+path_exists VPN {
+        # path exists when a VPN tunnel launched by nmcli/nm-applet is active
+        path = "/proc/sys/net/ipv4/conf/tun0"
+}
+
+tztime local {
+        format = " %d-%m-%Y %H:%M:%S"
+}
+
+tztime berlin {
+        format = "%Y-%m-%d %H:%M:%S %Z"
+        timezone = "Europe/Berlin"
+}
+
+load {
+        format = " %5min"
+}
+
+cpu_temperature 0 {
+        format = "T: %degrees °C"
+        path = "/sys/devices/platform/coretemp.0/hwmon/hwmon3/temp1_input"
+}
+
+disk "/" {
+        format = " / %free"
+        on_click 1 = "exec pcmanfm"
+}
+
+volume master {
+        format = "♪: %volume"
+        format_muted = "♪: muted (%volume)"
+        device = "default"
+        mixer = "Master"
+        mixer_idx = 0
+        on_click 1 = "exec pavucontrol"
+        on_click 4 = "exec pactl set-sink-volume @DEFAULT_SINK@ +5%"
+        on_click 5 = "exec pactl set-sink-volume @DEFAULT_SINK@ -5%"
+}
+
+# start with a preferable setup
+xrandr {
+    force_on_start = "eDP1+DP1"
+    DP1_pos = "left-of eDP1"
+    VGA_workspaces = "7"
+}
